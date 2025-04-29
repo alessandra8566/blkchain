@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="86" height="86" viewBox="0 0 86 86">
+  <g id="popup_warning" transform="translate(-917 -132)">
+    <g id="Group_3" data-name="Group 3" transform="translate(917 132)">
+      <path id="Fill_1" data-name="Fill 1" d="M65.249,79.8a3.359,3.359,0,1,0-3.481-5.746A36.6,36.6,0,1,1,73.129,63.137a3.359,3.359,0,1,0,5.585,3.734,42.978,42.978,0,0,0-66.12-54.277A43,43,0,0,0,65.249,79.8" fill="#006e94"/>
+    </g>
+    <path id="Icon_metro-warning" data-name="Icon metro-warning" d="M46.54,65.439a4.885,4.885,0,1,1-4.885-4.885A4.885,4.885,0,0,1,46.54,65.439Zm-4.885-9.771a4.885,4.885,0,0,1-4.885-4.885V36.126a4.885,4.885,0,1,1,9.771,0V50.782A4.885,4.885,0,0,1,41.654,55.668Z" transform="translate(918.346 122.988)" fill="#f8a826"/>
+  </g>
+</svg>

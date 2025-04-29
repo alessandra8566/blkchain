@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="86" height="86" viewBox="0 0 86 86">
+  <g id="popup_success" transform="translate(0 -0.228)">
+    <path id="Path" d="M65.249,79.8a3.359,3.359,0,1,0-3.481-5.746A36.6,36.6,0,1,1,73.129,63.137a3.359,3.359,0,1,0,5.585,3.734,42.978,42.978,0,0,0-66.12-54.277A43,43,0,0,0,65.249,79.8" transform="translate(0 0.228)" fill="#006e94"/>
+    <path id="Icon_feather-check" data-name="Icon feather-check" d="M43.794,6,16.436,33.358,4,20.923" transform="translate(19.103 23.549)" fill="none" stroke="#1dbe00" stroke-linecap="round" stroke-linejoin="round" stroke-width="6"/>
+  </g>
+</svg>

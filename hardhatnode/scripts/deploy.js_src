@@ -1,0 +1,28 @@
+// scripts/deploy.js
+const { ethers } = require("hardhat");
+const fs = require("fs");
+require("dotenv").config();
+
+async function main() {
+  const [deployer] = await ethers.getSigners();
+  console.log("Deploying contracts with the account:", deployer.address);
+
+  const StockContract = await ethers.getContractFactory("StockContract");
+  const stockContract = await StockContract.deploy();
+
+  await stockContract.waitForDeployment();
+
+  const contractAddress = stockContract.target;
+  console.log("StockContract deployed to:", contractAddress);
+
+  // 儲存到 .env
+  fs.appendFileSync(".env", `CONTRACT_ADDRESS=${contractAddress}\n`);
+}
+
+main()
+  .then(() => process.exit(0))
+  .catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });
+

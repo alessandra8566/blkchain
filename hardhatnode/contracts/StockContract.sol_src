@@ -1,0 +1,56 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract StockContract {
+
+    string public stockName = "2330";
+    uint256 public totalStock = 1000;
+    mapping(address => uint256) public balances; //last value 
+    mapping(address => uint256) public stockHistory; //his value
+
+    event StockBought(address indexed buyer, uint256 amount, uint256 remainingStock);
+    event StockTransferred(address indexed from, address indexed to, uint256 amount);
+
+    //but stock func
+    function buyStock(uint256 amount) external {
+        require(amount == 1, "just buy 1 coin");
+        require(totalStock >= amount, "not enught");
+
+        totalStock -= amount; //stock less 
+        balances[msg.sender] += amount; // now stock add
+        stockHistory[msg.sender] += amount; // trade list 
+
+        emit StockBought(msg.sender, amount, totalStock); //touch ement 
+    }
+    //Transaction
+    function transferStock(address to, uint256 amount) external {
+    	require(balances[msg.sender] >= amount, "Not enough stock to transfer");
+    	require(to != address(0), "Invalid address");
+
+    	balances[msg.sender] -= amount;
+    	balances[to] += amount;
+
+    	emit StockTransferred(msg.sender, to, amount);
+    }
+
+    //event StockTransferred(address indexed from, address indexed to, uint256 amount);
+
+    //search last stock value 
+    function getRemainingStock() external view returns (uint256) {
+        return totalStock;
+    }
+
+    //search account money
+    function getBalance(address account) external view returns (uint256) {
+        return balances[account];
+    }
+
+    //search account stock trade 
+    function getTransactionHistory(address account) external view returns (uint256) {
+        return stockHistory[account];
+    }
+    // ✅ 新增：取得帳戶目前持有股數
+    function getStocksByAddress(address account) external view returns (uint256) {
+        return balances[account];
+    }
+}

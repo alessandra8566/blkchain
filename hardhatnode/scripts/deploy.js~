@@ -1,0 +1,42 @@
+// scripts/deploy.js
+const { ethers } = require("hardhat");
+const fs = require("fs");
+require("dotenv").config();
+
+async function main() {
+  //const [deployer] = await ethers.getSigners();
+  const [sender, deployer] = await ethers.getSigners();
+  console.log("Deploying contracts with the account:", deployer.address);
+
+  //support ERC20 , 確保 deployer 有錢（ETH）
+  const balance = await ethers.provider.getBalance(deployer.address);
+  if (balance.lt(ethers.parseEther("0.1"))) {
+    console.log("Deployer has low balance. Funding deployer from sender...");
+    const tx = await sender.sendTransaction({
+      to: deployer.address,
+      value: ethers.parseEther("100"),
+    });
+    await tx.wait();
+    console.log("✅ Sent 100 ETH to deployer.");
+  }
+
+  //-----------
+  const StockContract = await ethers.getContractFactory("StockContract");
+  const stockContract = await StockContract.deploy();
+
+  await stockContract.waitForDeployment();
+
+  const contractAddress = stockContract.target;
+  console.log("StockContract deployed to:", contractAddress);
+
+  // 儲存到 .env
+  fs.appendFileSync(".env", `CONTRACT_ADDRESS=${contractAddress}\n`);
+}
+
+main()
+  .then(() => process.exit(0))
+  .catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });
+

@@ -1,0 +1,39 @@
+services:
+
+  nginx:
+    container_name: nginx
+    build:
+      context: .
+      dockerfile: nginx/Dockerfile  # Path to your Dockerfile
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - blockchain
+      - frontend
+    networks:
+      - dappnet
+  blockchain:
+    build:
+      context: .
+      dockerfile: hardhatnode/Dockerfile
+    container_name: hardhat-api-node
+    ports:
+      - "8545:8545"
+      - "3000:3000"
+    networks:
+      - dappnet
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    container_name: react-dapp
+    ports:
+      - "8080:80"
+    networks:
+      - dappnet
+
+networks:
+  dappnet:
+    driver: bridge

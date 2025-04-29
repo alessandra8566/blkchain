@@ -1,0 +1,36 @@
+const { ethers } = require("hardhat");
+
+async function main() {
+  const args = process.argv.slice(2);
+  if (args.length < 3) {
+    console.error("Usage: npx hardhat run scripts/TransferStock.js <from> <to> <amount> --network localhost");
+    process.exit(1);
+  }
+
+  const fromAddress = args[0];
+  const toAddress = args[1];
+  const amount = parseInt(args[2]);
+
+  const contractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
+
+  const StockContract = await ethers.getContractFactory("StockContract");
+  const stock = await StockContract.attach(contractAddress); // ABI+地址搞定✅
+
+  const signers = await ethers.getSigners();
+  const senderSigner = signers.find(s => s.address.toLowerCase() === fromAddress.toLowerCase());
+
+  if (!senderSigner) {
+    console.error(`Signer for address ${fromAddress} not found`);
+    process.exit(1);
+  }
+
+  const tx = await stock.connect(senderSigner).transferStock(toAddress, amount);
+  await tx.wait();
+
+  console.log(`✅ Transferred ${amount} stock from ${fromAddress} to ${toAddress}`);
+}
+
+main().catch((error) => {
+  console.error(error);
+  process.exitCode = 1;
+});

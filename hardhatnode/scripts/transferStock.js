@@ -1,0 +1,73 @@
+const { ethers } = require("hardhat");
+//console.log("ethers:", ethers);
+//console.log("ethers.utils:", ethers.utils);
+
+//驗證 ethers 版本 如果是 5.x.x，則 ethers.utils.isAddress 是正確的，問題可能出在依賴載入。如果是 6.x.x，則需要使用 ethers.isAddress。
+console.log("ethers version:", ethers.version);
+
+async function main(accountA, accountB, amountToTransfer) {
+  //if (!ethers.utils.isAddress(accountA) || !ethers.utils.isAddress(accountB)) {
+  //  throw new Error("accountA 或 accountB 不是有效的 Ethereum 位址");
+  //} //由於 ethers.utils 是 undefined，可能是因為你使用的是 ethers.js v6，而程式碼仍使用 v5 的語法。在 ethers.js v6 中，isAddress 不再位於 ethers.utils 下，而是直接在 ethers 模組中。
+  
+  if (!ethers.isAddress(accountA) || !ethers.isAddress(accountB)) {
+    throw new Error("accountA 或 accountB 不是有效的 Ethereum 位址");
+  }
+
+  amountToTransfer = parseInt(amountToTransfer);
+  if (isNaN(amountToTransfer) || amountToTransfer <= 0) {
+    throw new Error("轉帳數量必須為正整數");
+  }
+
+  //const contractAddress = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
+  require("dotenv").config();
+  const contractAddress = process.env.CONTRACT_ADDRESS;
+  const [deployer] = await ethers.getSigners();
+  console.log("部署者:", deployer.address);
+
+  const contract = await ethers.getContractAt("StockContract", contractAddress);
+  //const StockContract = await ethers.getContractFactory("StockContract");
+  //const contract = await StockContract.attach(contractAddress);
+
+
+  console.log("\n轉帳前狀態:");
+  console.log("帳號 A 餘額:", (await contract.getBalance(accountA)).toString());
+  console.log("帳號 B 餘額:", (await contract.getBalance(accountB)).toString());
+
+  await hre.network.provider.request({
+    method: "hardhat_impersonateAccount",
+    params: [accountA],
+  });
+
+  const accountASigner = await ethers.getSigner(accountA);
+
+  console.log(`\n正在從 ${accountA} 轉出 ${amountToTransfer} 股票到 ${accountB}...`);
+  const tx = await contract.connect(accountASigner).transferStock(accountB, amountToTransfer);
+  await tx.wait();
+  console.log("✅ 轉帳成功！");
+
+  console.log("\n轉帳後狀態:");
+  console.log("帳號 A 餘額:", (await contract.getBalance(accountA)).toString());
+  console.log("帳號 B 餘額:", (await contract.getBalance(accountB)).toString());
+
+  await hre.network.provider.request({
+    method: "hardhat_stopImpersonatingAccount",
+    params: [accountA],
+  });
+}
+
+module.exports = { main };
+
+if (require.main === module) {
+  const args = process.argv.slice(2);
+  if (args.length !== 3) {
+    console.error("用法: npx hardhat run scripts/transferStock.js <accountA> <accountB> <amount>");
+    process.exit(1);
+  }
+  main(args[0], args[1], args[2])
+    .then(() => process.exit(0))
+    .catch((error) => {
+      console.error(error);
+      process.exit(1);
+    });
+}

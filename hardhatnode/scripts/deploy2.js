@@ -1,0 +1,36 @@
+const { ethers } = require("hardhat");
+
+async function main() {
+  const [sender, deployer] = await ethers.getSigners();
+  console.log("Deploying contracts with the account:", deployer.address);
+
+  // 確保 deployer 賬戶有足夠的資金
+  const balance = await ethers.provider.getBalance(deployer.address);
+  const requiredBalance = ethers.parseEther("0.1"); // 設定所需的最小餘額
+
+  // 使用 ethers v6 的比較方法
+  if (balance < requiredBalance) {
+    console.log("Deployer has low balance. Funding deployer from sender...");
+    const tx = await sender.sendTransaction({
+      to: deployer.address,
+      value: ethers.parseEther("100"),
+    });
+    await tx.wait();
+    console.log("✅ Sent 100 ETH to deployer.");
+  }
+
+  const StockContract = await ethers.getContractFactory("StockContract");
+  const stockContract = await StockContract.deploy();
+  await stockContract.waitForDeployment();
+
+  const contractAddress = stockContract.address;
+  console.log("StockContract deployed to:", contractAddress);
+}
+
+main()
+  .then(() => process.exit(0))
+  .catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });
+  
