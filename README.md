@@ -24,3 +24,9 @@
 ├── docker-compose.yml        # docker compose 設定檔
 └── README.md                 # 專案說明
 ```
+
+## 啟動
+```
+cd blkchain
+docker-compose up --build 
+```
